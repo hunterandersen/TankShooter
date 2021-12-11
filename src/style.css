@@ -1,0 +1,26 @@
+* {
+    margin: 0;
+    padding: 0;
+    /* overflow: hidden; */
+}
+
+.container{
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.initialPageElement{
+    font-size: 2rem;
+    margin: .5rem;
+    padding: .1rem .4rem;
+}
+
+#canvas{
+    /* width: 100vw;
+    height: 100vh; */
+    background-color: rgb(15, 15, 15);
+}
