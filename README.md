@@ -18,7 +18,6 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-
 ### Built With
 * Javascript
 * [Socket.io](https://socket.io)
@@ -26,14 +25,14 @@
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple example steps.
+To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
 
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+* Make sure you have npm installed
+  https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Installation
 
@@ -43,30 +42,22 @@ To get a local copy up and running follow these simple example steps.
    ```
 2. Install NPM packages
    ```sh
-   npm install socket.io
+   npm install
    ```
-3. Change Directory to the server folder
-    ```sh
-    cd server
-    ```
 4. Run the server on your localhost
     ```sh
-    npm run server.js
+    npm start
     ```
-5. Once the server is running, open the client file in your browser
-
-    http://localhost:5500/src/index.html
+5. Once the server is running, direct your browser to it: 
+    http://localhost:3500/
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-
 
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
-
 It's recommended that you open the index.html file more than once in multiple browser tabs so that you can simulate multiple players connecting to a single room.
+
 Feel free to test it with a few friends! Have Fun!
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -74,11 +65,14 @@ Feel free to test it with a few friends! Have Fun!
 <!-- ROADMAP -->
 ## Roadmap
 
-- [] Implement composition class structure to more elegantly handle movement
+- [] Implement composition class structure to more elegantly handle object movement
 - [] Implement bullet collision and subsequent player death
 - [] Implement LERP to smooth object movements
 - [] Expand and beautify the start menu(s)
     - [] Make sure the menus are responsive
+- [] Secure the data transfers between server and client with JWT
+- [] Authenticate users
+    - [] Limit room creation to one room per user
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -97,7 +91,6 @@ Hunter Andersen - andersen.hunter42@gmail.com
 Project Link: [Tank Shooter](https://github.com/hunterandersen/TankShooter)
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
