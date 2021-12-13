@@ -1,14 +1,14 @@
-const Player = require('../src/Classes/Player');
-const Meteor = require('../src/Classes/Meteor');
-const Bullet = require('../src/Classes/Bullet');
-
-//List of users linked with their connection ids
-//Possibly use extra precise time stamp
+const Player = require('./Classes/Player');
+const Meteor = require('./Classes/Meteor');
+const Bullet = require('./Classes/Bullet');
+const express = require('express');
 
 const FRAME_RATE = 60;
 const windowWidth = 900;
 const windowHeight = 700;
 const NUM_RANDOM_CHARACTERS = 3;
+const SOCKET_PORT_NUMBER = 3000;
+const EXPRESS_PORT_NUMBER = 3500;
 
 const directions = {
     right:0,
@@ -27,9 +27,19 @@ let playerMovement = {
 let gameRooms = [];
 let gameState = [];
 
-const sockIO = require('socket.io')(3000, {
+//Set up the HTTP Server using Express
+const httpServer = express();
+//Set up the middleware that serves my static client-side html
+httpServer.use(express.static('src'));
+
+httpServer.listen(EXPRESS_PORT_NUMBER, () => {
+    console.log(`Server started on port ${EXPRESS_PORT_NUMBER}`);
+});
+
+//Set up the Socket Server and start it listening on PORT_NUMBER
+const sockIO = require('socket.io')(SOCKET_PORT_NUMBER, {
     cors: {
-        origins: ["http://localhost:3000", "*"],
+        origins: [`http://localhost:${SOCKET_PORT_NUMBER}`, "*"],
         methods: ["GET", "POST"]
     }
 });
@@ -304,9 +314,24 @@ function generateRoomId(){
     }
 
     //Check that it hasn't duplicated the game room code
+    if(isDuplicateRoomId(letters+numbers)){
+        return generateRoomId();
+    }
 
     return letters + numbers;
 
+}
+
+function isDuplicateRoomId(roomId){
+    gameRooms.forEach(id => {
+        if(roomId === id){
+            console.log(`Id in use: ${id}`);
+            console.log(`Duplicated ID: ${roomId}`);
+            return true;
+        }
+    });
+
+    return false;
 }
 
 function randIntBetween(a, b, nonZero){

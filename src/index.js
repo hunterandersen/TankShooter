@@ -1,4 +1,4 @@
-//io is retrieved in the script tag in index.html
+//io is retrieved from a cdn in the script tag in index.html
 
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');;
@@ -11,11 +11,10 @@ const windowHeight = 700;
 
 let playerNumber = -1;
 
-let windowVar = window.location.hostname;
-console.log(windowVar);
-windowVar = `http://${windowVar}:3000`;
+let clientHostName = window.location.hostname;
+clientHostName = `http://${clientHostName}:3000`;
 
-const serverSocket = io(windowVar);
+const serverSocket = io(clientHostName);
 
 newRoomButton.addEventListener('click', event => {
     if (userNameField.value.length > 2){
