@@ -1,36 +1,14 @@
 class Player{
-    pos = {
-        x:0,
-        y:0
-    }
-    size = {
-        width:0,
-        height:0
-    }
-    vel = {
-        x:0,
-        y:0,
-        direction:0, 
-        lastDirection:0
-    }
-    identity = {
-        color: 'white',
-        defaultColor: null
-    }
-    health = 0;
-    speed = 10;
-    canMove = true;
 
     constructor(x, y, width, height, velX, velY, health, color){
-        this.pos.x = x;
-        this.pos.y = y;
-        this.size.width = width;
-        this.size.height = height;
-        this.vel.x = velX;
-        this.vel.y = velY;
+        this.pos = {x, y};
+        this.size = {width, height};
+        this.vel = {x:velX, y:velY, direction:0, lastDirection:0};
         this.health = health;
-        this.identity.color = color;
-        this.identity.defaultColor = color;
+        this.identity = {color, defaultColor:color};
+        this.health = 0;
+        this.speed = 10;
+        this.canMove = true;
     }
 
     setVelocity(direction){
