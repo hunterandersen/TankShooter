@@ -12,12 +12,11 @@ let clientHostName = window.location.hostname;
 clientHostName = `http://${clientHostName}:3000`;
 const serverSocket = io(clientHostName);
 
+//Grab the search params from the url to determine whether this client should make a new room or join an existing room
 const searchParamsRaw = window.location.search
 let searchParams = new URLSearchParams(searchParamsRaw);
-console.log(window.location.search);
 let playerName = searchParams.get('playerName');
 const roomID = searchParams.get('roomID');
-console.log(roomID);
 
 if(playerName){//If there is a player name, then they want a room. One way or another
 

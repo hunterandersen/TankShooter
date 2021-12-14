@@ -3,12 +3,31 @@ const joinRoomButton = document.getElementById('joinGameRoomBtn');
 const userNameField = document.getElementById('nameInput');
 const roomNameField = document.getElementById('roomInput');
 
-console.log('Menu File starting...');
-console.log(window.location.hostname);
-console.log(window.location.pathname);
-console.log(window.location.href);
-
 const HREF = window.location.href;
+
+//Fetch a list of game rooms on the server and console log them
+function displayGameRooms(){
+    fetch('/getRooms', {
+        method:'GET',
+        mode:'cors',
+        cache:'no-cache',
+        credentials: 'same-origin',
+        headers: {'Content-Type': 'application/json'}
+    })
+    .then(response => response.json())
+    .then(data => {
+        let values = Object.values(data);
+        if(values.length > 0){
+            values.forEach(room =>{
+                console.log(`Room: ${room}`);
+            })
+        }
+    })
+    .catch(error =>{
+        console.error(`Error: `, error);
+    });
+}
+displayGameRooms();
 
 newRoomButton.addEventListener('click', event => {
     if (userNameField.value.length > 2){
@@ -22,6 +41,7 @@ newRoomButton.addEventListener('click', event => {
         window.location.replace(redirectURL);
     } else {
         console.log('Invalid Name Length');
+        displayGameRooms();
     }
 
 });
@@ -42,6 +62,7 @@ joinRoomButton.addEventListener('click', event => {
             window.location.replace(redirectURL);
         }else{
             console.log('Invalid Room Length');
+            displayGameRooms();
         }
 
     } else {

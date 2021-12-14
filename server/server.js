@@ -12,7 +12,7 @@ const EXPRESS_PORT_NUMBER = 3500;
 
 const playerColors = ['white', 'blue', 'green', 'yellow'];
 
-let gameRooms = [];
+let gameRooms = {};
 let gameState = [];
 
 //Set up the HTTP Server using Express
@@ -23,6 +23,11 @@ httpServer.use(express.static('gameFiles'));
 
 httpServer.listen(EXPRESS_PORT_NUMBER, () => {
     console.log(`Server started on port ${EXPRESS_PORT_NUMBER}`);
+});
+
+httpServer.get('/getRooms', (req, res)=>{
+    console.log('Sending a list of the rooms');
+    res.json(gameRooms);
 });
 
 //Set up the Socket Server and start it listening on PORT_NUMBER
@@ -312,13 +317,14 @@ function generateRoomId(){
 }
 
 function isDuplicateRoomId(roomId){
-    gameRooms.forEach(id => {
-        if(roomId === id){
+    let values = Object.values(gameRooms);
+    for(let i = 0; i < values.length; i++){
+        if (roomId === values[i]){
             console.log(`Id in use: ${id}`);
             console.log(`Duplicated ID: ${roomId}`);
             return true;
         }
-    });
+    }
 
     return false;
 }

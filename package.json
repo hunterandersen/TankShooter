@@ -4,8 +4,8 @@
   "description": "Multiplayer Real Time Tank Game",
   "main": "index.js",
   "scripts": {
-    "start": "node server\\server.js",
-    "dev": "nodemon server\\server.js"
+    "start": "node server/server.js",
+    "dev": "nodemon server/server.js"
   },
   "author": "Hunter Andersen",
   "license": "MIT",
