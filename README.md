@@ -56,7 +56,7 @@ To get a local copy up and running follow these simple steps.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-It's recommended that you open the index.html file more than once in multiple browser tabs so that you can simulate multiple players connecting to a single room.
+It's recommended that you open more than one instance in your browser so that you can simulate multiple players connecting to a single room.
 
 Feel free to test it with a few friends! Have Fun!
 
