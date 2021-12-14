@@ -1,48 +1,33 @@
 //io is retrieved from a cdn in the script tag in index.html
 
 const canvas = document.getElementById('canvas');
-const context = canvas.getContext('2d');;
-const newRoomButton = document.getElementById('newGameRoomBtn');
-const joinRoomButton = document.getElementById('joinGameRoomBtn');
-const userNameField = document.getElementById('nameInput');
-const roomNameField = document.getElementById('roomInput');
+const context = canvas.getContext('2d');
 const windowWidth = 900;
 const windowHeight = 700;
 
 let playerNumber = -1;
 
+//Connect to the socket.io server
 let clientHostName = window.location.hostname;
 clientHostName = `http://${clientHostName}:3000`;
-
 const serverSocket = io(clientHostName);
 
-newRoomButton.addEventListener('click', event => {
-    if (userNameField.value.length > 2){
-        let userName = userNameField.value;
-        
-        serverSocket.emit('requestNewRoom', {userName});
-    } else {
-        console.log('Invalid Name Length');
+const searchParamsRaw = window.location.search
+let searchParams = new URLSearchParams(searchParamsRaw);
+console.log(window.location.search);
+let playerName = searchParams.get('playerName');
+const roomID = searchParams.get('roomID');
+console.log(roomID);
+
+if(playerName){//If there is a player name, then they want a room. One way or another
+
+    if(roomID){//If there is a roomID, then they are joining a room
+        serverSocket.emit('requestJoinRoom', {roomName:roomID, playerName});
     }
-
-});
-
-joinRoomButton.addEventListener('click', event => {
-    if (userNameField.value.length > 2){
-        let userName = userNameField.value;
-        
-        if (roomNameField.value.length == 6){
-            let roomName = roomNameField.value;
-
-            serverSocket.emit('requestJoinRoom', {roomName, userName});
-        }else{
-            console.log('Invalid Room Length');
-        }
-
-    } else {
-        console.log('Invalid Name Length');
+    else{//Otherwise, they will create a new room to join
+        serverSocket.emit('requestNewRoom', {playerName});
     }
-});
+}
 
 serverSocket.on('connection', (thing)=>{
     console.log('connection!');
@@ -66,23 +51,13 @@ serverSocket.on('disconnect', roomName => {
 
 serverSocket.on('init', data => {
     playerNumber = data;
-    newRoomButton.remove();
-    joinRoomButton.remove();
-    roomNameField.remove();
-    userNameField.remove();
-    canvas.removeAttribute('hidden');
+    console.log('We are initializing a room');
     canvas.width = windowWidth;
     canvas.height = windowHeight;
     canvas.setAttribute('background-color', 'rgb(15, 15, 15)');
 });
 
 serverSocket.on('newGameFrame', paintFrame);
-
-/* context.beginPath();
-context.strokeStyle = 'red';
-context.strokeWidth = 1;
-context.strokeRect(0, 0, canvas.width, canvas.height);
-context.closePath(); */
 
 //get state of game from server
 //draw game state

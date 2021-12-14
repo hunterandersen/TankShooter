@@ -1,0 +1,20 @@
+* {
+    margin: 0;
+    padding: 0;
+    /* overflow: hidden; */
+}
+
+.container{
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+
+    align-items: center;
+    justify-content: center;
+}
+
+#canvas{
+    /* width: 100vw;
+    height: 100vh; */
+    background-color: rgb(15, 15, 15);
+}
