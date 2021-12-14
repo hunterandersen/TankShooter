@@ -2,7 +2,6 @@ const Player = require('./Classes/Player');
 const Meteor = require('./Classes/Meteor');
 const Bullet = require('./Classes/Bullet');
 const express = require('express');
-const path = require('path');
 
 const FRAME_RATE = 60;
 const windowWidth = 900;
@@ -11,19 +10,7 @@ const NUM_RANDOM_CHARACTERS = 3;
 const SOCKET_PORT_NUMBER = 3000;
 const EXPRESS_PORT_NUMBER = 3500;
 
-const directions = {
-    right:0,
-    down:1,
-    left:2,
-    up:3
-}
 const playerColors = ['white', 'blue', 'green', 'yellow'];
-let playerMovement = {
-    up: false,
-    down: false,
-    left: false,
-    right: false
-}
 
 let gameRooms = [];
 let gameState = [];
@@ -31,13 +18,8 @@ let gameState = [];
 //Set up the HTTP Server using Express
 const httpServer = express();
 //Set up the middleware that serves my static client-side html
-console.log(path.join(__dirname, 'src', 'gameFiles'));
 httpServer.use(express.static('menuFiles'));
 httpServer.use(express.static('gameFiles'));
-//httpServer.use('/', express.static(path.join(__dirname, 'menuFiles')));
-//httpServer.use('/tankShooter', express.static('gameFiles'));
-//httpServer.use(express.static('src'));
-
 
 httpServer.listen(EXPRESS_PORT_NUMBER, () => {
     console.log(`Server started on port ${EXPRESS_PORT_NUMBER}`);
