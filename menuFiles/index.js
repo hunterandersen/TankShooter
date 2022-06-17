@@ -2,6 +2,7 @@ const newRoomButton = document.getElementById('newGameRoomBtn');
 const joinRoomButton = document.getElementById('joinGameRoomBtn');
 const userNameField = document.getElementById('nameInput');
 const roomNameField = document.getElementById('roomInput');
+const roomList = document.getElementById('roomList');
 
 const HREF = window.location.href;
 
@@ -18,8 +19,19 @@ function displayGameRooms(){
     .then(data => {
         let values = Object.values(data);
         if(values.length > 0){
+            //Remove all of the items in the list
+            while(roomList.firstChild){
+                roomList.removeChild(roomList.firstChild);
+            }
+            
+            //Recreate the list with all the room names
+            let roomInfo;
             values.forEach(room =>{
                 console.log(`Room: ${room}`);
+
+                roomInfo = document.createElement('li');
+                roomInfo.innerHTML = `${room}`;
+                roomList.appendChild(roomInfo)
             })
         }
     })
@@ -46,7 +58,7 @@ newRoomButton.addEventListener('click', event => {
 
 });
 
-joinRoomButton.addEventListener('click', event => {
+joinRoomButton.addEventListener('click', () => {
     if (userNameField.value.length > 2){
         let userName = userNameField.value;
         

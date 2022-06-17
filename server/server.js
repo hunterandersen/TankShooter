@@ -15,6 +15,8 @@ const playerColors = ['white', 'blue', 'green', 'yellow'];
 let gameRooms = {};
 let gameState = [];
 
+let uniqueActiveGameRooms = [];
+
 //Set up the HTTP Server using Express
 const httpServer = express();
 //Set up the middleware that serves my static client-side html
@@ -27,7 +29,7 @@ httpServer.listen(EXPRESS_PORT_NUMBER, () => {
 
 httpServer.get('/getRooms', (req, res)=>{
     console.log('Sending a list of the rooms');
-    res.json(gameRooms);
+    res.json(uniqueActiveGameRooms);
 });
 
 //Set up the Socket Server and start it listening on PORT_NUMBER
@@ -47,6 +49,8 @@ sockIO.on('connection', client => {
     client.on('requestNewRoom', data => {
         roomName = generateRoomId();
         gameRooms[client.id] = roomName;
+        uniqueActiveGameRooms.push(roomName);
+
         client.emit('roomName', roomName);
 
         initGameState(roomName);
@@ -66,12 +70,14 @@ sockIO.on('connection', client => {
 
         if (roomToJoin){
             numPlayersInRoom = roomToJoin.size;
+            console.log(`Num Players: ${numPlayersInRoom}`);
             if (numPlayersInRoom <= 0){
                 console.log('THEY CAN JOIN AN EMPTY ROOM!');
             }
-            if (numPlayersInRoom && numPlayersInRoom > 4){
+            if (numPlayersInRoom >= 4){
                 //Already 4 players in the room
                 client.emit('fullRoom', roomName);
+                console.log('Full Room. More than 4 trying to enter');
                 return;
             }
         }else{
@@ -80,11 +86,13 @@ sockIO.on('connection', client => {
         }
 
         gameRooms[client.id] = roomName;
+        //No need to add to the unique active rooms lists since this code only happens when joining an existing room
         client.userName = userName;
         
         client.join(roomName);
         console.log('Joined room: ', roomName);
         playerIndex = numPlayersInRoom + 1;
+        console.log(`Player Index: ${playerIndex}`);
         gameState[roomName].players.push(new Player(450, 450, 50, 50, 0, 0, 35, playerColors[playerIndex-1]));
 
         client.emit('init', playerIndex);
@@ -110,10 +118,31 @@ sockIO.on('connection', client => {
     client.on('disconnect', reason =>{
         console.log(`Client ${client.id} has disconnected due to: ${reason}`);
 
+        let currentRoom = sockIO.sockets.adapter.rooms.get(roomName);
+        let numPlayersInRoom;
+        if (currentRoom){
+            //Find how many players are in the room
+            numPlayersInRoom = currentRoom.size;
+            console.log(numPlayersInRoom);
+        }else{
+            client.emit('roomClose', currentRoom);
+            console.log(`Room emptied`);
+            //Remove the game room from the list of all game rooms
+            delete gameRooms[client.id];
+
+            //Remove the game room from the active rooms list
+            let roomIndex = uniqueActiveGameRooms.indexOf(currentRoom);
+            uniqueActiveGameRooms.splice(roomIndex, 1);
+        }
+
         if(playerIndex){
             gameState[roomName].players.splice(playerIndex-1, 1);
             client.emit('playerDisconnect', playerIndex);
         }
+        if(numPlayersInRoom <= 0){
+            console.log(gameRooms);
+        }
+
     });
 
 });
@@ -224,7 +253,7 @@ function update(room){
 
         });
         
-        //SCARY CODE ---- Nesting For Each statements
+        //Scary performance potential ---- Nesting For Each statements
         let bulletHit = false;
         gameState[room].meteors.forEach(meteor => {
             if (Math.abs(bullet.vel.x) > 0){//bullet is facing left or right
