@@ -30,7 +30,7 @@ function displayGameRooms(){
                 console.log(`Room: ${room}`);
 
                 roomInfo = document.createElement('li');
-                roomInfo.innerHTML = `${room}`;
+                roomInfo.textContent = `${room}`;
                 roomList.appendChild(roomInfo)
             })
         }

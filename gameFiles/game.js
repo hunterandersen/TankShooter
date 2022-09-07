@@ -33,6 +33,10 @@ serverSocket.on('connection', (thing)=>{
 });
 
 serverSocket.on('roomName', roomName => {
+    /**
+     * Eventually, we could build a link that the user can copy and share to other players so that they can join the room
+     */
+    document.getElementById("title").textContent = `Room ID: ${roomName}`;
     console.log(`Room Name is: ${roomName}`);
 });
 
@@ -84,7 +88,6 @@ let playerControlKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Spa
 //Then check if the player overlaps with the circle inside the triangle
 //If not, then check the three triangle points for collision
 //There will be small zones that are left unchecked but shouldn't be too noticeable
-
 
 function paintFrame(frameState){
     context.clearRect(0, 0, canvas.width, canvas.height);

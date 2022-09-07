@@ -48,6 +48,8 @@ To get a local copy up and running follow these simple steps.
     ```sh
     npm start
     ```
+    Note: If you cd into /server and then run `node server.js`, the express middleware won't work because it won't be able to locate those files
+
 5. Once the server is running, direct your browser to it: 
     http://localhost:3500/
 

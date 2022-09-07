@@ -72,7 +72,7 @@ sockIO.on('connection', client => {
             numPlayersInRoom = roomToJoin.size;
             console.log(`Num Players: ${numPlayersInRoom}`);
             if (numPlayersInRoom <= 0){
-                console.log('THEY CAN JOIN AN EMPTY ROOM!');
+                console.log('UH OH - THEY CAN JOIN AN EMPTY ROOM!');
             }
             if (numPlayersInRoom >= 4){
                 //Already 4 players in the room
@@ -128,7 +128,8 @@ sockIO.on('connection', client => {
             client.emit('roomClose', currentRoom);
             console.log(`Room emptied`);
             //Remove the game room from the list of all game rooms
-            delete gameRooms[client.id];
+            //delete gameRooms[client.id]; delete doesn't alter the length of the array
+            gameRooms.splice(gameRooms.indexOf(client.id), 1);
 
             //Remove the game room from the active rooms list
             let roomIndex = uniqueActiveGameRooms.indexOf(currentRoom);
@@ -182,6 +183,7 @@ function update(room){
         meteor.pos.x += meteor.vel.x;
         meteor.pos.y += meteor.vel.y;
 
+        //Bounce the meteors off the walls
         if(meteor.pos.x - meteor.size.radius <= 0 || meteor.pos.x + meteor.size.radius >= windowWidth){
             meteor.vel.x *= -1;
         }
@@ -201,7 +203,7 @@ function update(room){
                 meteor.addVelocity(player.vel.x * .5, player.vel.y *.5);
                 /* meteor.vel.x *= -1;
                 meteor.vel.y *= -1; */
-                //Freeze the player's movement due to hitting a wall
+                //Freeze the player's movement due to hitting a meteor
                 player.setCanMove(false);
                 player.setColor('orange');
             }
@@ -220,9 +222,19 @@ function update(room){
 
     //Move players
     gameState[room].players.forEach(player => {
-        if(player.canMove == true){
+        if(player.canMove){
             player.pos.x += player.vel.x;
             player.pos.y += player.vel.y;
+            if (player.pos.x < 0){
+                player.pos.x = 0;
+            } else if (player.pos.x + player.size.width > windowWidth){
+                player.pos.x = windowWidth - player.size.width;
+            }
+            if (player.pos.y < 0){
+                player.pos.y = 0;
+            } else if (player.pos.y + player.size.height > windowHeight){
+                player.pos.y = windowHeight - player.size.height;
+            }
         }
     });
 
@@ -250,7 +262,6 @@ function update(room){
             if(pointWithinRect(nearestPointOnTriangleX, nearestPointOnTriangleY, player.pos.x, player.pos.y, player.size.width, player.size.height)){
                 player.setColor('lightgreen');//Certain Collision
             }
-
         });
         
         //Scary performance potential ---- Nesting For Each statements
@@ -335,18 +346,23 @@ function generateRoomId(){
         rand = Math.floor(Math.random() * numeric.length);
         numbers += numeric.substring(rand, rand+1);
     }
-
+    
     //Check that it hasn't duplicated the game room code
-    if(isDuplicateRoomId(letters+numbers)){
+    if(isDuplicateRoomId(letters+numbers, gameRooms)){
         return generateRoomId();
     }
 
     return letters + numbers;
-
 }
 
-function isDuplicateRoomId(roomId){
-    let values = Object.values(gameRooms);
+/**
+ * 
+ * @param {string} roomId The new roomId string to be checked
+ * @param {Object} prevRooms An object whose values are the previous roomIds to be referenced
+ * @returns {boolean} true if prevRooms contains roomId, false if it's a new id
+ */
+function isDuplicateRoomId(roomId, prevRooms){
+    let values = Object.values(prevRooms);
     for(let i = 0; i < values.length; i++){
         if (roomId === values[i]){
             console.log(`Id in use: ${id}`);
@@ -358,6 +374,13 @@ function isDuplicateRoomId(roomId){
     return false;
 }
 
+/**
+ * 
+ * @param {number} a low-end
+ * @param {number} b high-end
+ * @param {boolean} nonZero 
+ * @returns {number} A random number between a and b. If nonZero is true, then the random number can't be 0.
+ */
 function randIntBetween(a, b, nonZero){
     if (nonZero){
         let x = Math.round(Math.random() * (b-a) + a);
