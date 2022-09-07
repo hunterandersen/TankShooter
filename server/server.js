@@ -249,6 +249,7 @@ function update(room){
         //Check triangle collision
 
         //Clamp version of testing collision
+        //Scary performance potential ---- Nesting For Each statements inside of the filter
         let nearestPointOnTriangleX, nearestPointOnTriangleY;
         gameState[room].players.forEach(player => {
             if (Math.abs(bullet.vel.x) > 0){//bullet is facing left or right
@@ -264,7 +265,6 @@ function update(room){
             }
         });
         
-        //Scary performance potential ---- Nesting For Each statements
         let bulletHit = false;
         gameState[room].meteors.forEach(meteor => {
             if (Math.abs(bullet.vel.x) > 0){//bullet is facing left or right
@@ -293,7 +293,7 @@ function update(room){
 
 function meteorDeath(meteor, room){
     //Simulate meteor explosion. Aka, create bullets that the meteor shoots out as it dies
-    let velX, velY
+    let velX, velY;
     for(let i = 0; i < 8; i++){
         velX = randIntBetween(-6, 6, true);
         velY = randIntBetween(-6, 6, true);
@@ -302,12 +302,21 @@ function meteorDeath(meteor, room){
 
 }
 
+//------------------------------  Utility Functions  ------------------------------
 
-//Utility Functions -------------------
+//returns the values without square rooting them
+//This saves on performance since square rooting a number is a more costly (less performant) operation
 function squaredDistance(a, b, x, y){
-    return (x-a)*(x-a) + (y-b)*(y-b);//returns the values without square rooting them, to save on performance
+    return (x-a)*(x-a) + (y-b)*(y-b);
 }
 
+/**
+ * 
+ * @param {number} value "x" or "y" on coordinate plane to be checked
+ * @param {number} minX The low end value
+ * @param {number} maxX The high end value
+ * @returns {number} The "clamped" nearest value between the given points
+ */
 function nearestPointBetween(value, minX, maxX){
     if (value < minX){
         return minX;

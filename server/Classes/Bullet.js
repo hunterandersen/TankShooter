@@ -1,5 +1,15 @@
 class Bullet{
 
+    /**
+     * 
+     * @param {number} x x position of the Bullet
+     * @param {number} y y position of the Bullet
+     * @param {number} base the length of the base of the Bullet (triangle)
+     * @param {number} height the length of the height of the Bullet (triangle)
+     * @param {number} velX the x velocity of the Bullet
+     * @param {number} velY the y velocity of the Bullet
+     * @param {number} direction Number mapped to a cardinal direction (0-3) (East, North, West, South)
+     */
     constructor(x, y, base, height, velX, velY, direction){
         this.pos = {x, y};
         this.size = {base, height};
