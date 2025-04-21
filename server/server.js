@@ -67,6 +67,7 @@ sockIO.on('connection', client => {
 
         let numPlayersInRoom;
         const roomToJoin = sockIO.sockets.adapter.rooms.get(roomName);
+        console.log("Attempting to join this room:", roomToJoin);
 
         if (roomToJoin){
             numPlayersInRoom = roomToJoin.size;
@@ -81,6 +82,7 @@ sockIO.on('connection', client => {
                 return;
             }
         }else{
+            console.log("Attempt to join invalid room:", roomName);
             client.emit('invalidRoom', roomName);
             return;
         }
@@ -128,8 +130,8 @@ sockIO.on('connection', client => {
             client.emit('roomClose', currentRoom);
             console.log(`Room emptied`);
             //Remove the game room from the list of all game rooms
-            //delete gameRooms[client.id]; delete doesn't alter the length of the array
-            gameRooms.splice(gameRooms.indexOf(client.id), 1);
+            //Reminder: gameRooms is an object, not an array
+            delete gameRooms[client.id];
 
             //Remove the game room from the active rooms list
             let roomIndex = uniqueActiveGameRooms.indexOf(currentRoom);

@@ -42,6 +42,12 @@ serverSocket.on('roomName', roomName => {
 
 serverSocket.on('invalidRoom', roomName => {
     console.log('Invalid Room: ', roomName);
+    //Redirect back to the menu
+    const LOC = window.location;
+    const BASE = `${LOC.protocol}//${LOC.hostname}` + (LOC.port? `:${LOC.port}`: "");
+    const redirectURL = `${BASE}/index.html`;
+    console.log(redirectURL);
+    window.location.replace(redirectURL);
 });
 
 serverSocket.on('fullRoom', roomName => {
