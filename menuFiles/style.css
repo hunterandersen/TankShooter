@@ -22,10 +22,28 @@ ul{
     align-items: center;
 }
 
+.roomButton {
+    padding: .5rem;
+    margin-block: .25rem;
+    font-size: large;
+}
+
+.selected {
+    background-color: inherit;
+    border: none;
+    font-weight: 800;
+    color: green;
+}
+
 .initialPageElement{
     font-size: 2rem;
     margin: .5rem;
     padding: .1rem .4rem;
+}
+
+#userFeedbackBar {
+    text-align: center;
+    color: rgb(112, 12, 12);
 }
 
 #canvas{

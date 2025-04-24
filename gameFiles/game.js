@@ -42,11 +42,10 @@ serverSocket.on('roomName', roomName => {
 
 serverSocket.on('invalidRoom', roomName => {
     console.log('Invalid Room: ', roomName);
-    //Redirect back to the menu
+    //Redirect back to the menu page
     const LOC = window.location;
     const BASE = `${LOC.protocol}//${LOC.hostname}` + (LOC.port? `:${LOC.port}`: "");
     const redirectURL = `${BASE}/index.html`;
-    console.log(redirectURL);
     window.location.replace(redirectURL);
 });
 
@@ -88,12 +87,6 @@ let playerMovement = {
 }
 
 let playerControlKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Space'];
-
-//Idea for simpler triangle collision detection
-//Check if the two bounding rectangles overlap first
-//Then check if the player overlaps with the circle inside the triangle
-//If not, then check the three triangle points for collision
-//There will be small zones that are left unchecked but shouldn't be too noticeable
 
 function paintFrame(frameState){
     context.clearRect(0, 0, canvas.width, canvas.height);

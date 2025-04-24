@@ -22,15 +22,31 @@ const httpServer = express();
 //Set up the middleware that serves my static client-side html
 httpServer.use(express.static('menuFiles'));
 httpServer.use(express.static('gameFiles'));
-
-httpServer.listen(EXPRESS_PORT_NUMBER, () => {
-    console.log(`Server started on port ${EXPRESS_PORT_NUMBER}`);
-});
+httpServer.use(express.json());
 
 httpServer.get('/getRooms', (req, res)=>{
     console.log('Sending a list of the rooms');
     res.json(uniqueActiveGameRooms);
 });
+
+httpServer.post("/roomToJoinIsValid", (req, res) => {
+    console.log("Determining incoming room's validity");
+    const {roomName} = req.body;
+
+    //Find the room in the list of all rooms
+    const roomToJoin = sockIO.sockets.adapter.rooms.get(roomName);
+    //If the room exists, then true, else false
+    const roomIsValid = !!roomToJoin;
+    console.log("roomIsValid", roomIsValid);
+
+    res.json(roomIsValid);
+});
+
+httpServer.listen(EXPRESS_PORT_NUMBER, () => {
+    console.log(`Server started on port ${EXPRESS_PORT_NUMBER}`);
+});
+
+//------------ END EXPRESS SERVER ----------------
 
 //Set up the Socket Server and start it listening on PORT_NUMBER
 const sockIO = require('socket.io')(SOCKET_PORT_NUMBER, {
