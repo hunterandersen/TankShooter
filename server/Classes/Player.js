@@ -1,12 +1,12 @@
 class Player{
 
-    constructor(x, y, width, height, velX, velY, health, color){
+    constructor(x, y, width, height, velX, velY, health, color, armor){
         this.pos = {x, y};
         this.size = {width, height};
         this.vel = {x:velX, y:velY, direction:0, lastDirection:0};
-        this.health = health;
+        this.health = health || 10;
         this.identity = {color, defaultColor:color};
-        this.health = 0;
+        this.armor = armor || 1;
         this.speed = 10;
         this.canMove = true;
     }
@@ -44,6 +44,12 @@ class Player{
 
     setCanMove(value){
         this.canMove = value;
+    }
+
+    takeDamage(dmgIncoming){
+        const dmgReduction = dmgIncoming - (dmgIncoming *  (this.armor / 100));
+        const dmgRealized = Math.max((dmgIncoming - dmgReduction), 1);
+        this.health = this.health - dmgRealized;
     }
 
 }

@@ -110,8 +110,21 @@ function paintFrame(frameState){
 }
 
 function drawPlayer(p){
+    //Draw the player's body
     context.fillStyle = p.identity.color;
     context.fillRect(p.pos.x, p.pos.y, p.size.width, p.size.height);
+
+    //Draw the player's health
+    const fontSize = 30;
+    context.font = `${fontSize}px sans-serif`;
+    context.fillStyle = "red";
+    //textAlign center only effects alignment on the x-axis
+    context.textAlign = "center";
+    const playerMidX = p.pos.x + p.size.width/2;
+    //Offset included to help y-alignment be centered
+    //Doesn't quite seem perfect, but okay for now
+    const playerMidY = p.pos.y + p.size.height/2 + (fontSize/4);
+    context.fillText(p.health, playerMidX, playerMidY);
 }
 
 function drawMeteor(m){

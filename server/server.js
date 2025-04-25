@@ -345,6 +345,16 @@ function nearestPointBetween(value, minX, maxX){
     }
 }
 
+/**
+ * 
+ * @param {*} x The point's x coord
+ * @param {*} y The point's y coord
+ * @param {*} a The rect's starting point "x"
+ * @param {*} b The rect's starting point "y"
+ * @param {*} width The rect's width
+ * @param {*} height The rect's height
+ * @returns A boolean - whether or not the point lies within the rectangle
+ */
 function pointWithinRect(x, y, a, b, width, height){
     if (x >= a && x <= a + width){//x axis potential hit
         if (y >= b && y <= b + height){
