@@ -8,7 +8,7 @@ class Bullet{
      * @param {number} height the length of the height of the Bullet (triangle)
      * @param {number} velX the x velocity of the Bullet
      * @param {number} velY the y velocity of the Bullet
-     * @param {number} direction Number mapped to a cardinal direction (0-3) (East, North, West, South)
+     * @param {number} direction Number mapped to a cardinal direction (0-3) (East, South, West, North)
      */
     constructor(x, y, base, height, velX, velY, direction){
         this.pos = {x, y};

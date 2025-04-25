@@ -6,8 +6,8 @@ class Player{
         this.vel = {x:velX, y:velY, direction:0, lastDirection:0};
         this.health = health || 10;
         this.identity = {color, defaultColor:color};
-        this.armor = armor || 1;
-        this.speed = 10;
+        this.armor = armor || 10;
+        this.speed = 6;
         this.canMove = true;
     }
 
@@ -49,6 +49,7 @@ class Player{
     takeDamage(dmgIncoming){
         const dmgReduction = dmgIncoming - (dmgIncoming *  (this.armor / 100));
         const dmgRealized = Math.max((dmgIncoming - dmgReduction), 1);
+        console.log(`Reducing damage by ${dmgRealized}`);
         this.health = this.health - dmgRealized;
     }
 

@@ -35,8 +35,8 @@ httpServer.post("/roomToJoinIsValid", (req, res) => {
 
     //Find the room in the list of all rooms
     const roomToJoin = sockIO.sockets.adapter.rooms.get(roomName);
-    //If the room exists, then true, else false
-    const roomIsValid = !!roomToJoin;
+    //If the room exists and doesn't have more than 3 players, then true, else false
+    const roomIsValid = !!roomToJoin && (roomToJoin.size >= 4);
     console.log("roomIsValid", roomIsValid);
 
     res.json(roomIsValid);
@@ -114,7 +114,6 @@ sockIO.on('connection', client => {
         gameState[roomName].players.push(new Player(450, 450, 50, 50, 0, 0, 35, playerColors[playerIndex-1]));
 
         client.emit('init', playerIndex);
-
     });
 
     client.on('userInput', direction => {
@@ -126,9 +125,36 @@ sockIO.on('connection', client => {
     client.on('shootBullet', () => {
         if(roomName && client.rooms.has(roomName)){
             let shooter = gameState[roomName].players[playerIndex-1];
-            let newBulletX = shooter.pos.x + (shooter.size.width*.5) + shooter.vel.x - 10;
-            let newBulletY = shooter.pos.y + (shooter.size.height*.5) + shooter.vel.y - 12;
-            gameState[roomName].bullets.push(new Bullet(newBulletX, newBulletY, 20, 25, 
+            let bulletBase = 20;
+            let bulletHeight = 25;
+            //Start with the shooter's position, but REMEMBER that a bullet's "position" for drawing is really it's top left corner, so bulletHeight only matters half the time
+            let newBulletX = shooter.pos.x;
+            let newBulletY = shooter.pos.y;
+            //Based on which direction the shooter is facing, offset the x and y so that the bullet appears in front of the player instead of inside the player
+            switch(shooter.vel.lastDirection) {
+                //East
+                case 0:
+                    newBulletX += (shooter.size.width + Math.abs(shooter.vel.x) + 2);
+                    newBulletY += (shooter.size.height / 2 - bulletBase / 2);
+                break;
+                //South
+                case 1:
+                    newBulletX += (shooter.size.width / 2 - bulletBase / 2);
+                    newBulletY += (shooter.size.height + Math.abs(shooter.vel.y) + 2);
+                break;
+                //West
+                case 2:
+                    newBulletX -= ((Math.abs(shooter.vel.x) + bulletHeight + 2));
+                    newBulletY += (shooter.size.height / 2 - bulletBase / 2);
+                break;
+                //North
+                case 3:
+                    newBulletX += (shooter.size.width / 2 - bulletBase / 2);
+                    newBulletY -= ((Math.abs(shooter.vel.y) + bulletHeight + 2));
+                break;
+            }
+
+            gameState[roomName].bullets.push(new Bullet(newBulletX, newBulletY, bulletBase, bulletHeight, 
                 (shooter.vel.x/Math.abs(shooter.vel.x))*12 || 0, (shooter.vel.y/Math.abs(shooter.vel.y))*12 || 0, shooter.vel.lastDirection));
         }
     });
@@ -269,6 +295,7 @@ function update(room){
         //Clamp version of testing collision
         //Scary performance potential ---- Nesting For Each statements inside of the filter
         let nearestPointOnTriangleX, nearestPointOnTriangleY;
+        let bulletHit = false;
         gameState[room].players.forEach(player => {
             if (Math.abs(bullet.vel.x) > 0){//bullet is facing left or right
                 nearestPointOnTriangleX = nearestPointBetween(player.pos.x + (player.size.width*.5), bullet.pos.x, bullet.pos.x + bullet.size.height);
@@ -279,11 +306,15 @@ function update(room){
             }
 
             if(pointWithinRect(nearestPointOnTriangleX, nearestPointOnTriangleY, player.pos.x, player.pos.y, player.size.width, player.size.height)){
-                player.setColor('lightgreen');//Certain Collision
+                player.setColor('lightgreen');//Certain Collision with bullet
+                player.takeDamage(20);
+                //bulletHit = true;
             }
         });
+        //Remove the bullet so that it doesn't pierce through the player
+        if (bulletHit) return false;
         
-        let bulletHit = false;
+        bulletHit = false;
         gameState[room].meteors.forEach(meteor => {
             if (Math.abs(bullet.vel.x) > 0){//bullet is facing left or right
                 nearestPointOnTriangleX = nearestPointBetween(meteor.pos.x, bullet.pos.x, bullet.pos.x + bullet.size.height);
@@ -300,9 +331,8 @@ function update(room){
             }
 
         });
-        if(bulletHit){
-            return false;//Remove the bullet so that it doesn't pierce through the meteor
-        }
+        //Remove the bullet so that it doesn't pierce through the meteor
+        if(bulletHit) return false;
 
         return bullet;
     });
