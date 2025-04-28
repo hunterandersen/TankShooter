@@ -197,8 +197,7 @@ function initGameState(room){
         players: [new Player(10, 20, 50, 50, 0, 0, 30, playerColors[0])],
         meteors: [new Meteor(100, 100, 25, 1, -2, 40), new Meteor(200, 200, 25, 0, 0, 40),
              new Meteor(487, 333, 5, -5, 0, 40), new Meteor(600, 482, 15, 0, -2, 40), new Meteor(60, 400, 35, 2, -2, 15)],
-        bullets: [new Bullet(30, 58, 20, 20, 3, 0), new Bullet(50, 58, 20, 20, 3, 0),
-             new Bullet(70, 58, 20, 20, 3, 0), new Bullet(90, 58, 20, 20, 3, 0)]
+        bullets: [],
     };
 
     const intervalId = setInterval(() => {
@@ -308,7 +307,7 @@ function update(room){
             if(pointWithinRect(nearestPointOnTriangleX, nearestPointOnTriangleY, player.pos.x, player.pos.y, player.size.width, player.size.height)){
                 player.setColor('lightgreen');//Certain Collision with bullet
                 player.takeDamage(20);
-                //bulletHit = true;
+                bulletHit = true;
             }
         });
         //Remove the bullet so that it doesn't pierce through the player

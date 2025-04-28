@@ -49,7 +49,6 @@ class Player{
     takeDamage(dmgIncoming){
         const dmgReduction = dmgIncoming - (dmgIncoming *  (this.armor / 100));
         const dmgRealized = Math.max((dmgIncoming - dmgReduction), 1);
-        console.log(`Reducing damage by ${dmgRealized}`);
         this.health = this.health - dmgRealized;
     }
 
