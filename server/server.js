@@ -12,7 +12,6 @@ const FRAME_RATE = 60;
 const windowWidth = 900;
 const windowHeight = 700;
 const NUM_RANDOM_CHARACTERS = 3;
-const SOCKET_PORT_NUMBER = 3000;
 const EXPRESS_PORT_NUMBER = process.env.PORT || 3500;
 
 const playerColors = ['white', 'blue', 'green', 'yellow'];
@@ -43,7 +42,7 @@ expressApp.post("/roomToJoinIsValid", (req, res) => {
     //Find the room in the list of all rooms
     const roomToJoin = sockIO.sockets.adapter.rooms.get(roomName);
     //If the room exists and doesn't have more than 3 players, then true, else false
-    const roomIsValid = !!roomToJoin && (roomToJoin.size >= 4);
+    const roomIsValid = !!roomToJoin && (roomToJoin.size < 4);
     console.log("roomIsValid", roomIsValid);
 
     res.json(roomIsValid);
