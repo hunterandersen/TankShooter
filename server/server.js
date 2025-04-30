@@ -2,13 +2,16 @@ const Player = require('./Classes/Player');
 const Meteor = require('./Classes/Meteor');
 const Bullet = require('./Classes/Bullet');
 const express = require('express');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 const FRAME_RATE = 60;
 const windowWidth = 900;
 const windowHeight = 700;
 const NUM_RANDOM_CHARACTERS = 3;
 const SOCKET_PORT_NUMBER = 3000;
-const EXPRESS_PORT_NUMBER = 3500;
+const EXPRESS_PORT_NUMBER = process.env.PORT || 3500;
 
 const playerColors = ['white', 'blue', 'green', 'yellow'];
 
@@ -48,8 +51,11 @@ httpServer.listen(EXPRESS_PORT_NUMBER, () => {
 
 //------------ END EXPRESS SERVER ----------------
 
+const testery = require('socket.io');
+
+
 //Set up the Socket Server and start it listening on PORT_NUMBER
-const sockIO = require('socket.io')(SOCKET_PORT_NUMBER, {
+const sockIO = require('socket.io')(undefined, {
     cors: {
         origins: [`http://localhost:${SOCKET_PORT_NUMBER}`, 
             `tankshooter-production.up.railway.app`,
