@@ -12,6 +12,7 @@ const FRAME_RATE = 60;
 const windowWidth = 900;
 const windowHeight = 700;
 const NUM_RANDOM_CHARACTERS = 3;
+console.log("It's the env port:", process.env.PORT);
 const EXPRESS_PORT_NUMBER = process.env.PORT || 3500;
 
 const playerColors = ['white', 'blue', 'green', 'yellow'];
@@ -49,7 +50,13 @@ expressApp.post("/roomToJoinIsValid", (req, res) => {
 });
 
 //Set up the Socket Server and start it listening on the express server
-const sockIO = new SocketServer(httpServer);
+const sockIO = new SocketServer(httpServer, {
+    cors: {
+        origin: [`http://localhost:${EXPRESS_PORT_NUMBER}`, 
+            `tankshooter-production.up.railway.app`],
+        methods: ["GET", "POST"]
+    }
+});
 
 httpServer.listen(EXPRESS_PORT_NUMBER, () => {
     console.log(`Server started on port ${EXPRESS_PORT_NUMBER}`);

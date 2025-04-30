@@ -8,7 +8,6 @@ const windowHeight = 700;
 let playerNumber = -1;
 
 //Connect to the socket.io server
-console.log(window.location);
 //io(window.location.origin)
 //Leaving the paramter blank is supposed to connect to the server it's already running on
 const serverSocket = io();
@@ -60,7 +59,7 @@ serverSocket.on('disconnect', roomName => {
 
 serverSocket.on('init', data => {
     playerNumber = data;
-    console.log('We are initializing a room');
+    console.log('Room initializing');
     canvas.width = windowWidth;
     canvas.height = windowHeight;
     canvas.setAttribute('background-color', 'rgb(15, 15, 15)');
