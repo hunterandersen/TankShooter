@@ -51,9 +51,8 @@ expressApp.post("/roomToJoinIsValid", (req, res) => {
 //Set up the Socket Server and start it listening on the express server
 const sockIO = new SocketServer(httpServer, {
     cors: {
-        origins: [`http://localhost:${EXPRESS_PORT_NUMBER}`, 
-            `tankshooter-production.up.railway.app`,
-            `tankshooter-production.up.railway.app:${EXPRESS_PORT_NUMBER}`, "*"],
+        origin: [`http://localhost:${EXPRESS_PORT_NUMBER}`, 
+            `tankshooter-production.up.railway.app`],
         methods: ["GET", "POST"]
     }
 });
