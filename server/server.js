@@ -49,13 +49,7 @@ expressApp.post("/roomToJoinIsValid", (req, res) => {
 });
 
 //Set up the Socket Server and start it listening on the express server
-const sockIO = new SocketServer(httpServer, {
-    cors: {
-        origin: [`http://localhost:${EXPRESS_PORT_NUMBER}`, 
-            `tankshooter-production.up.railway.app`],
-        methods: ["GET", "POST"]
-    }
-});
+const sockIO = new SocketServer(httpServer);
 
 httpServer.listen(EXPRESS_PORT_NUMBER, () => {
     console.log(`Server started on port ${EXPRESS_PORT_NUMBER}`);

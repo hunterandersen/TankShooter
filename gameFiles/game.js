@@ -9,7 +9,9 @@ let playerNumber = -1;
 
 //Connect to the socket.io server
 console.log(window.location);
-const serverSocket = io(window.location.origin);
+//io(window.location.origin)
+//Leaving the paramter blank is supposed to connect to the server it's already running on
+const serverSocket = io();
 
 //Grab the search params from the url to determine whether this client should make a new room or join an existing room
 const searchParamsRaw = window.location.search
