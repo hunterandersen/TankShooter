@@ -51,7 +51,9 @@ httpServer.listen(EXPRESS_PORT_NUMBER, () => {
 //Set up the Socket Server and start it listening on PORT_NUMBER
 const sockIO = require('socket.io')(SOCKET_PORT_NUMBER, {
     cors: {
-        origins: [`http://localhost:${SOCKET_PORT_NUMBER}`, "*"],
+        origins: [`http://localhost:${SOCKET_PORT_NUMBER}`, 
+            `tankshooter-production.up.railway.app`,
+            `tankshooter-production.up.railway.app:${SOCKET_PORT_NUMBER}`, "*"],
         methods: ["GET", "POST"]
     }
 });
