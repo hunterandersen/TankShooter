@@ -2,7 +2,9 @@ const Player = require('./Classes/Player');
 const Meteor = require('./Classes/Meteor');
 const Bullet = require('./Classes/Bullet');
 const express = require('express');
+const { createServer } = require('http');
 const dotenv = require('dotenv');
+const SocketServer = require("socket.io").Server;
 
 dotenv.config();
 
@@ -20,19 +22,21 @@ let gameState = [];
 
 let uniqueActiveGameRooms = [];
 
-//Set up the HTTP Server using Express
-const httpServer = express();
+//Set up the Express request handler
+const expressApp = express();
+//Create the server that will handle both Express and Socket.io
+const httpServer = createServer(expressApp);
 //Set up the middleware that serves my static client-side html
-httpServer.use(express.static('menuFiles'));
-httpServer.use(express.static('gameFiles'));
-httpServer.use(express.json());
+expressApp.use(express.static('menuFiles'));
+expressApp.use(express.static('gameFiles'));
+expressApp.use(express.json());
 
-httpServer.get('/getRooms', (req, res)=>{
+expressApp.get('/getRooms', (req, res)=>{
     console.log('Sending a list of the rooms');
     res.json(uniqueActiveGameRooms);
 });
 
-httpServer.post("/roomToJoinIsValid", (req, res) => {
+expressApp.post("/roomToJoinIsValid", (req, res) => {
     console.log("Determining incoming room's validity");
     const {roomName} = req.body;
 
@@ -45,24 +49,21 @@ httpServer.post("/roomToJoinIsValid", (req, res) => {
     res.json(roomIsValid);
 });
 
+//Set up the Socket Server and start it listening on the express server
+const sockIO = new SocketServer(httpServer, {
+    cors: {
+        origins: [`http://localhost:${EXPRESS_PORT_NUMBER}`, 
+            `tankshooter-production.up.railway.app`,
+            `tankshooter-production.up.railway.app:${EXPRESS_PORT_NUMBER}`, "*"],
+        methods: ["GET", "POST"]
+    }
+});
+
 httpServer.listen(EXPRESS_PORT_NUMBER, () => {
     console.log(`Server started on port ${EXPRESS_PORT_NUMBER}`);
 });
 
 //------------ END EXPRESS SERVER ----------------
-
-const testery = require('socket.io');
-
-
-//Set up the Socket Server and start it listening on PORT_NUMBER
-const sockIO = require('socket.io')(undefined, {
-    cors: {
-        origins: [`http://localhost:${SOCKET_PORT_NUMBER}`, 
-            `tankshooter-production.up.railway.app`,
-            `tankshooter-production.up.railway.app:${SOCKET_PORT_NUMBER}`, "*"],
-        methods: ["GET", "POST"]
-    }
-});
 
 sockIO.on('connection', client => {
     console.log('Client connected to server', client.id);

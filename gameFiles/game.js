@@ -8,9 +8,8 @@ const windowHeight = 700;
 let playerNumber = -1;
 
 //Connect to the socket.io server
-let clientHostName = window.location.hostname;
-clientHostName = `http://${clientHostName}:3000`;
-const serverSocket = io(clientHostName);
+console.log(window.location);
+const serverSocket = io(window.location.origin);
 
 //Grab the search params from the url to determine whether this client should make a new room or join an existing room
 const searchParamsRaw = window.location.search
