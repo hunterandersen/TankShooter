@@ -12,7 +12,6 @@ const FRAME_RATE = 60;
 const windowWidth = 900;
 const windowHeight = 700;
 const NUM_RANDOM_CHARACTERS = 3;
-console.log("It's the env port:", process.env.PORT);
 const EXPRESS_PORT_NUMBER = process.env.PORT || 3500;
 
 const playerColors = ['white', 'blue', 'green', 'yellow'];
