@@ -97,7 +97,9 @@ function paintFrame(frameState){
     let bullets = frameState.bullets;
 
     players.forEach((player) => {
-        drawPlayer(player);
+        if (player) {
+            drawPlayer(player);
+        }
     });
 
     meteors.forEach((meteor) =>{

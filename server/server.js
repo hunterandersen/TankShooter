@@ -125,12 +125,14 @@ sockIO.on('connection', client => {
     });
 
     client.on('userInput', direction => {
+        console.log(`${gameState[roomName].players[playerIndex-1]} player is attempting to move ${direction}`);
         if(roomName && client.rooms.has(roomName)){
-            gameState[roomName].players[playerIndex-1].setVelocity(direction);//implement lerping
+            gameState[roomName].players[playerIndex-1]?.setVelocity(direction);//implement lerping
         }
     });
 
     client.on('shootBullet', () => {
+        console.log(`${gameState[roomName].players[playerIndex-1]} is attempting to shoot`);
         if(roomName && client.rooms.has(roomName)){
             let shooter = gameState[roomName].players[playerIndex-1];
             let bulletBase = 20;
@@ -189,7 +191,10 @@ sockIO.on('connection', client => {
         }
 
         if(playerIndex){
-            gameState[roomName].players.splice(playerIndex-1, 1);
+            //Old way of handling this messed up the other players' indexes:
+            //gameState[roomName].players.splice(playerIndex-1, 1);
+            //New way leaves behind an empty placeholder, which needs to be checked for at appropriate times
+            gameState[roomName].players[playerIndex-1] = undefined;
             client.emit('playerDisconnect', playerIndex);
         }
         if(numPlayersInRoom <= 0){
@@ -219,8 +224,10 @@ function initGameState(room){
 function update(room){
     //Reset player statuses to their defaults
     gameState[room].players.forEach(player => {
-        player.setCanMove(true);
-        player.setDefaultColor();
+        if (player) {
+            player.setCanMove(true);
+            player.setDefaultColor();
+        }
     });
 
     //Update meteors
@@ -246,19 +253,20 @@ function update(room){
         let nearPointX;
         let nearPointY;
         gameState[room].players.forEach(player => {
-            nearPointX = nearestPointBetween(meteor.pos.x, player.pos.x, player.pos.x + player.size.width);
-            nearPointY = nearestPointBetween(meteor.pos.y, player.pos.y, player.pos.y + player.size.height);
+            if (player) {
+                nearPointX = nearestPointBetween(meteor.pos.x, player.pos.x, player.pos.x + player.size.width);
+                nearPointY = nearestPointBetween(meteor.pos.y, player.pos.y, player.pos.y + player.size.height);
 
-            if (squaredDistance(meteor.pos.x, meteor.pos.y, nearPointX, nearPointY) < (meteor.size.radius * meteor.size.radius)){
-                //COLLISION!
-                meteor.addVelocity(player.vel.x * .5, player.vel.y *.5);
-                /* meteor.vel.x *= -1;
-                meteor.vel.y *= -1; */
-                //Freeze the player's movement due to hitting a meteor
-                player.setCanMove(false);
-                player.setColor('orange');
+                if (squaredDistance(meteor.pos.x, meteor.pos.y, nearPointX, nearPointY) < (meteor.size.radius * meteor.size.radius)){
+                    //COLLISION!
+                    meteor.addVelocity(player.vel.x * .5, player.vel.y *.5);
+                    /* meteor.vel.x *= -1;
+                    meteor.vel.y *= -1; */
+                    //Freeze the player's movement due to hitting a meteor
+                    player.setCanMove(false);
+                    player.setColor('orange');
+                }
             }
-
         });
 
         return meteor;
@@ -273,7 +281,7 @@ function update(room){
 
     //Move players
     gameState[room].players.forEach(player => {
-        if(player.canMove){
+        if(player?.canMove){
             player.pos.x += player.vel.x;
             player.pos.y += player.vel.y;
             if (player.pos.x < 0){
@@ -304,18 +312,20 @@ function update(room){
         let nearestPointOnTriangleX, nearestPointOnTriangleY;
         let bulletHit = false;
         gameState[room].players.forEach(player => {
-            if (Math.abs(bullet.vel.x) > 0){//bullet is facing left or right
-                nearestPointOnTriangleX = nearestPointBetween(player.pos.x + (player.size.width*.5), bullet.pos.x, bullet.pos.x + bullet.size.height);
-                nearestPointOnTriangleY = nearestPointBetween(player.pos.y + (player.size.height*.5), bullet.pos.y, bullet.pos.y + bullet.size.base);
-            }else{//bullet is facing up or down
-                nearestPointOnTriangleX = nearestPointBetween(player.pos.x + (player.size.width*.5), bullet.pos.x, bullet.pos.x + bullet.size.base);
-                nearestPointOnTriangleY = nearestPointBetween(player.pos.y + (player.size.height*.5), bullet.pos.y, bullet.pos.y + bullet.size.height);
-            }
-
-            if(pointWithinRect(nearestPointOnTriangleX, nearestPointOnTriangleY, player.pos.x, player.pos.y, player.size.width, player.size.height)){
-                player.setColor('lightgreen');//Certain Collision with bullet
-                player.takeDamage(20);
-                bulletHit = true;
+            if (player) {
+                if (Math.abs(bullet.vel.x) > 0){//bullet is facing left or right
+                    nearestPointOnTriangleX = nearestPointBetween(player.pos.x + (player.size.width*.5), bullet.pos.x, bullet.pos.x + bullet.size.height);
+                    nearestPointOnTriangleY = nearestPointBetween(player.pos.y + (player.size.height*.5), bullet.pos.y, bullet.pos.y + bullet.size.base);
+                }else{//bullet is facing up or down
+                    nearestPointOnTriangleX = nearestPointBetween(player.pos.x + (player.size.width*.5), bullet.pos.x, bullet.pos.x + bullet.size.base);
+                    nearestPointOnTriangleY = nearestPointBetween(player.pos.y + (player.size.height*.5), bullet.pos.y, bullet.pos.y + bullet.size.height);
+                }
+    
+                if(pointWithinRect(nearestPointOnTriangleX, nearestPointOnTriangleY, player.pos.x, player.pos.y, player.size.width, player.size.height)){
+                    player.setColor('lightgreen');//Certain Collision with bullet
+                    player.takeDamage(20);
+                    bulletHit = true;
+                }
             }
         });
         //Remove the bullet so that it doesn't pierce through the player
