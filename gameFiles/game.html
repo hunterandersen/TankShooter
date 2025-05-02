@@ -11,6 +11,15 @@
     <h1 id="title">Room Id: </h1>
     <div class="container">
         <canvas id='canvas'></canvas>
+        <div id="gameOverContainer" hidden>
+            <h2 id="gameOverText"></h2>
+            <form class="playAgainForm">
+                <label>Play Again?</label>
+                <button class="yesButton">Yes</button>
+                <button class="noButton">No</button>
+            </form>
+        </div>
+        
     </div>
     
     <script src="https://cdn.socket.io/4.4.0/socket.io.min.js" integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj" crossorigin="anonymous"></script>

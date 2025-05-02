@@ -74,19 +74,18 @@ sockIO.on('connection', client => {
         gameRooms[client.id] = roomName;
         uniqueActiveGameRooms.push(roomName);
 
+        client.userName = data.playerName;
         client.emit('roomName', roomName);
 
-        initGameState(roomName);
+        initGameState(roomName, client.userName);
  
         client.join(roomName);
-        client.userName = data;
         playerIndex = 1;
         client.emit('init', playerIndex);
     });
 
     client.on('requestJoinRoom', data => {
         roomName = data.roomName + '';
-        let userName = data.userName;
 
         let numPlayersInRoom;
         const roomToJoin = sockIO.sockets.adapter.rooms.get(roomName);
@@ -112,26 +111,27 @@ sockIO.on('connection', client => {
 
         gameRooms[client.id] = roomName;
         //No need to add to the unique active rooms lists since this code only happens when joining an existing room
-        client.userName = userName;
+        client.userName = data.playerName;
         
         client.join(roomName);
         console.log('Joined room: ', roomName);
         playerIndex = numPlayersInRoom + 1;
         console.log(`Player Index: ${playerIndex}`);
-        gameState[roomName].players.push(new Player(450, 450, 50, 50, 0, 0, 35, playerColors[playerIndex-1]));
+        gameState[roomName].players.push(new Player(450, 450, 50, 50, 0, 0, 35, playerColors[playerIndex-1], 10, client.userName));
 
         client.emit('init', playerIndex);
     });
 
     client.on('userInput', direction => {
-        console.log(`${gameState[roomName].players[playerIndex-1]} player is attempting to move ${direction}`);
+        console.log(gameState[roomName].players[playerIndex-1].identity);
+        console.log(`${gameState[roomName].players[playerIndex-1].identity.userName} player is attempting to move ${direction}`);
         if(roomName && client.rooms.has(roomName)){
             gameState[roomName].players[playerIndex-1]?.setVelocity(direction);//implement lerping
         }
     });
 
     client.on('shootBullet', () => {
-        console.log(`${gameState[roomName].players[playerIndex-1]} is attempting to shoot`);
+        console.log(`${gameState[roomName].players[playerIndex-1].identity.userName} is attempting to shoot`);
         if(roomName && client.rooms.has(roomName)){
             let shooter = gameState[roomName].players[playerIndex-1];
             let bulletBase = 20;
@@ -204,26 +204,31 @@ sockIO.on('connection', client => {
 
 });
 
-function initGameState(room){
+function initGameState(room, userName){
     gameState[room] = {
-        players: [new Player(10, 20, 50, 50, 0, 0, 30, playerColors[0])],
+        players: [new Player(10, 20, 50, 50, 0, 0, 30, playerColors[0], 10, userName)],
         meteors: [new Meteor(100, 100, 25, 1, -2, 40), new Meteor(200, 200, 25, 0, 0, 40),
              new Meteor(487, 333, 5, -5, 0, 40), new Meteor(600, 482, 15, 0, -2, 40), new Meteor(60, 400, 35, 2, -2, 15)],
         bullets: [],
+        isGameOver: false
     };
 
     const intervalId = setInterval(() => {
-        update(room);
-
-        sockIO.sockets.in(room).emit('newGameFrame', gameState[room]);
-
+        if (gameState[room].isGameOver) {
+            sockIO.sockets.in(room).emit("gameOver", gameState[room]);
+            clearInterval(intervalId);
+        } else {
+            update(room);
+    
+            sockIO.sockets.in(room).emit('newGameFrame', gameState[room]);
+        }
     }, 1000 / FRAME_RATE);
 }
 
 function update(room){
     //Reset player statuses to their defaults
     gameState[room].players.forEach(player => {
-        if (player) {
+        if (player?.canPlayCurrently) {
             player.setCanMove(true);
             player.setDefaultColor();
         }
@@ -252,7 +257,7 @@ function update(room){
         let nearPointX;
         let nearPointY;
         gameState[room].players.forEach(player => {
-            if (player) {
+            if (player?.canPlayCurrently) {
                 nearPointX = nearestPointBetween(meteor.pos.x, player.pos.x, player.pos.x + player.size.width);
                 nearPointY = nearestPointBetween(meteor.pos.y, player.pos.y, player.pos.y + player.size.height);
 
@@ -280,7 +285,7 @@ function update(room){
 
     //Move players
     gameState[room].players.forEach(player => {
-        if(player?.canMove){
+        if(player?.canMove && player?.canPlayCurrently){
             player.pos.x += player.vel.x;
             player.pos.y += player.vel.y;
             if (player.pos.x < 0){
@@ -311,7 +316,7 @@ function update(room){
         let nearestPointOnTriangleX, nearestPointOnTriangleY;
         let bulletHit = false;
         gameState[room].players.forEach(player => {
-            if (player) {
+            if (player?.canPlayCurrently) {
                 if (Math.abs(bullet.vel.x) > 0){//bullet is facing left or right
                     nearestPointOnTriangleX = nearestPointBetween(player.pos.x + (player.size.width*.5), bullet.pos.x, bullet.pos.x + bullet.size.height);
                     nearestPointOnTriangleY = nearestPointBetween(player.pos.y + (player.size.height*.5), bullet.pos.y, bullet.pos.y + bullet.size.base);
@@ -323,6 +328,9 @@ function update(room){
                 if(pointWithinRect(nearestPointOnTriangleX, nearestPointOnTriangleY, player.pos.x, player.pos.y, player.size.width, player.size.height)){
                     player.setColor('lightgreen');//Certain Collision with bullet
                     player.takeDamage(20);
+                    if (player.health <= 0) {
+                        player.canPlayCurrently = false;
+                    }
                     bulletHit = true;
                 }
             }
@@ -353,6 +361,14 @@ function update(room){
         return bullet;
     });
 
+    //Check for game over status
+    //If there's more than 1 player AND there's 1 (or fewer) players left alive, then it's a game over
+    if (gameState[room].players.length > 1 && gameState[room].players.filter(player => {
+        return player?.canPlayCurrently;
+    }).length <= 1) {
+        gameState[room].isGameOver = true;
+        console.log("GAME OVER");
+    }
 }
 
 function meteorDeath(meteor, room){

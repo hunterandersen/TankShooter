@@ -67,6 +67,25 @@ serverSocket.on('init', data => {
 
 serverSocket.on('newGameFrame', paintFrame);
 
+serverSocket.on('gameOver', (gameState) => {
+    console.log("Game Over sent");
+    paintFrame(gameState);
+    const gameOverText = document.getElementById("gameOverText");
+    const gameOverContainer = document.getElementById("gameOverContainer");
+
+    //Determine which player won the game
+    const winner = gameState.players.find(player => player.health > 0);
+
+    if (winner) {
+        gameOverText.textContent = `${winner.identity.userName} has won the game! Congratulations, ${winner.identity.userName}`;
+    } else {
+        gameOverText.textContent = `None of the players have any health remaining. Let's call it a draw`;
+    }
+    //Unhide the div so that the players' can see the end game message and options
+    gameOverContainer.hidden = false;
+
+});
+
 //get state of game from server
 //draw game state
 //get user input
