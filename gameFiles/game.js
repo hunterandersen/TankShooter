@@ -16,7 +16,7 @@ const serverSocket = io();
 const searchParamsRaw = window.location.search
 let searchParams = new URLSearchParams(searchParamsRaw);
 let playerName = searchParams.get('playerName');
-const roomID = searchParams.get('roomID');
+let roomID = searchParams.get('roomID');
 
 if(playerName){//If there is a player name, then they want a room. One way or another
 
@@ -72,6 +72,7 @@ serverSocket.on('gameOver', (gameState) => {
     paintFrame(gameState);
     const gameOverText = document.getElementById("gameOverText");
     const gameOverContainer = document.getElementById("gameOverContainer");
+    const yesButton = document.getElementById("yesButton");
 
     //Determine which player won the game
     const winner = gameState.players.find(player => player.health > 0);
@@ -83,6 +84,12 @@ serverSocket.on('gameOver', (gameState) => {
     }
     //Unhide the div so that the players' can see the end game message and options
     gameOverContainer.hidden = false;
+
+    yesButton.addEventListener("click", () => {
+        gameOverText.textContent = "";
+        gameOverContainer.hidden = true;
+        serverSocket.emit('requestNewRoom', {playerName});
+    });
 
 });
 

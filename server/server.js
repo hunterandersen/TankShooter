@@ -31,7 +31,6 @@ expressApp.use(express.static('gameFiles'));
 expressApp.use(express.json());
 
 expressApp.get('/getRooms', (req, res)=>{
-    console.log('Sending a list of the rooms');
     res.json(uniqueActiveGameRooms);
 });
 
@@ -93,7 +92,7 @@ sockIO.on('connection', client => {
 
         if (roomToJoin){
             numPlayersInRoom = roomToJoin.size;
-            console.log(`Num Players: ${numPlayersInRoom}`);
+            //console.log(`Num Players: ${numPlayersInRoom}`);
             if (numPlayersInRoom <= 0){
                 console.log('UH OH - THEY CAN JOIN AN EMPTY ROOM!');
             }
@@ -123,15 +122,14 @@ sockIO.on('connection', client => {
     });
 
     client.on('userInput', direction => {
-        console.log(gameState[roomName].players[playerIndex-1].identity);
-        console.log(`${gameState[roomName].players[playerIndex-1].identity.userName} player is attempting to move ${direction}`);
+        //console.log(`${gameState[roomName].players[playerIndex-1].identity.userName} player is attempting to move ${direction}`);
         if(roomName && client.rooms.has(roomName)){
             gameState[roomName].players[playerIndex-1]?.setVelocity(direction);//implement lerping
         }
     });
 
     client.on('shootBullet', () => {
-        console.log(`${gameState[roomName].players[playerIndex-1].identity.userName} is attempting to shoot`);
+        //console.log(`${gameState[roomName].players[playerIndex-1].identity.userName} is attempting to shoot`);
         if(roomName && client.rooms.has(roomName)){
             let shooter = gameState[roomName].players[playerIndex-1];
             let bulletBase = 20;
