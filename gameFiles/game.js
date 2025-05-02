@@ -116,7 +116,7 @@ function paintFrame(frameState){
     let bullets = frameState.bullets;
 
     players.forEach((player) => {
-        if (player) {
+        if (player?.canPlayCurrently) {
             drawPlayer(player);
         }
     });

@@ -238,7 +238,7 @@ function update(room){
     let meteorsLength = gameState[room].meteors.length;
     gameState[room].meteors = gameState[room].meteors.filter( meteor => {
         if(meteor.health <= 0){
-            meteorDeath(meteor, room);
+            meteorExplosion(meteor, room);
             return false;//Remove the dead meteors
         }
 
@@ -371,7 +371,7 @@ function update(room){
     }
 }
 
-function meteorDeath(meteor, room){
+function meteorExplosion(meteor, room){
     //Simulate meteor explosion. Aka, create bullets that the meteor shoots out as it dies
     let velX, velY;
     for(let i = 0; i < 8; i++){
