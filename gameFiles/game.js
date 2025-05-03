@@ -59,7 +59,6 @@ serverSocket.on('disconnect', roomName => {
 
 serverSocket.on('init', data => {
     playerNumber = data;
-    console.log('Room initializing');
     canvas.width = windowWidth;
     canvas.height = windowHeight;
     canvas.setAttribute('background-color', 'rgb(15, 15, 15)');
@@ -68,7 +67,6 @@ serverSocket.on('init', data => {
 serverSocket.on('newGameFrame', paintFrame);
 
 serverSocket.on('gameOver', (gameState) => {
-    console.log("Game Over sent");
     paintFrame(gameState);
     const gameOverText = document.getElementById("gameOverText");
     const gameOverContainer = document.getElementById("gameOverContainer");
@@ -88,7 +86,7 @@ serverSocket.on('gameOver', (gameState) => {
     yesButton.addEventListener("click", () => {
         gameOverText.textContent = "";
         gameOverContainer.hidden = true;
-        serverSocket.emit('requestNewRoom', {playerName});
+        serverSocket.emit('requestRestartGame', {playerName});
     });
 
 });

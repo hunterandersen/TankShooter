@@ -5,6 +5,7 @@ class Player{
         this.size = {width, height};
         this.vel = {x:velX, y:velY, direction:0, lastDirection:0};
         this.health = health || 10;
+        this.maxHealth = health;
         this.identity = {color, defaultColor:color, userName:name};
         this.armor = armor || 10;
         this.speed = 6;

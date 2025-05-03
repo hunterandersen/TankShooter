@@ -121,6 +121,10 @@ sockIO.on('connection', client => {
         client.emit('init', playerIndex);
     });
 
+    client.on('requestRestartGame', (playerName) => {
+        restartGameState(roomName);
+    });
+
     client.on('userInput', direction => {
         //console.log(`${gameState[roomName].players[playerIndex-1].identity.userName} player is attempting to move ${direction}`);
         if(roomName && client.rooms.has(roomName)){
@@ -211,6 +215,30 @@ function initGameState(room, userName){
         isGameOver: false
     };
 
+    startGameLoop(room);
+}
+
+//MARK: current spot
+function restartGameState(room) {
+    //Prevent multiple calls triggering
+    if (gameState[room].isGameOver) {
+        gameState[room].players.forEach(player => {
+            player.canPlayCurrently = true;
+            player.health = player.maxHealth;
+            const newX = randIntBetween(0, windowWidth - player.size.width);
+            const newY = randIntBetween(0, windowHeight - player.size.height);
+            player.pos.x = newX;
+            player.pos.y = newY;
+        });
+        gameState[room].bullets = [];
+        gameState[room].isGameOver = false;
+        startGameLoop(room);
+    } else {
+        console.log("Game is not over yet, so it should not be restarted");
+    }
+}
+
+function startGameLoop(room) {
     const intervalId = setInterval(() => {
         if (gameState[room].isGameOver) {
             sockIO.sockets.in(room).emit("gameOver", gameState[room]);
