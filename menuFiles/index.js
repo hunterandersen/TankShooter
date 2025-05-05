@@ -1,9 +1,15 @@
-const newRoomButton = document.getElementById('newGameRoomBtn');
-const joinRoomButton = document.getElementById('joinGameRoomBtn');
 const userNameInput = document.getElementById('nameInput');
 const roomNameInput = document.getElementById('roomInput');
+const newRoomButton = document.getElementById('newGameRoomBtn');
+const joinRoomButton = document.getElementById('joinGameRoomBtn');
 const userFeedbackBar = document.getElementById('userFeedbackBar');
 const roomList = document.getElementById('roomList');
+
+const MIN_USER_NAME_LENGTH = 2;
+const ROOM_NAME_LENGTH = 6;
+
+let isValidUserName = false;
+let isValidRoomName = false;
 
 const HREF = window.location.href;
 
@@ -113,4 +119,30 @@ joinRoomButton.addEventListener('click', async () => {
     } else {
         console.log('Invalid Name Length');
     }
+});
+
+//MARK: HTML UI handling
+function matchUItoState() {
+    //Enable/Disable the buttons based on the text inputs
+    newRoomButton.disabled = !isValidUserName;
+    joinRoomButton.disabled = !(isValidRoomName && isValidUserName);
+
+}
+
+roomNameInput.addEventListener("input", (e) => {
+    if (e.target.value.length === ROOM_NAME_LENGTH) {
+        isValidRoomName = true;
+    } else {
+        isValidRoomName = false;        
+    }
+    matchUItoState();
+});
+
+userNameInput.addEventListener("input", (e) => {
+    if (e.target.value.length >= MIN_USER_NAME_LENGTH) {
+        isValidUserName = true;
+    } else {
+        isValidUserName = false;        
+    }
+    matchUItoState();
 });

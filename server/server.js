@@ -458,6 +458,10 @@ function pointWithinRect(x, y, a, b, width, height){
     return false;
 }
 
+/**
+ * 
+ * @returns A 6 character long, random room id; composed of 3 upper case letters and 3 digits
+ */
 function generateRoomId(){
     let alpha = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let numeric = '0123456789';
