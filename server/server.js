@@ -218,7 +218,7 @@ function initGameState(room, userName){
     startGameLoop(room);
 }
 
-//MARK: current spot
+
 function restartGameState(room) {
     //Prevent multiple calls triggering
     if (gameState[room].isGameOver) {
@@ -304,9 +304,10 @@ function update(room){
 
     let newMeteorsLength = gameState[room].meteors.length;
     for(let i = 0; i < meteorsLength - newMeteorsLength; i++){
+        const radius = randIntBetween(10, 35);
         gameState[room].meteors.push(
-            new Meteor(randIntBetween(0, windowWidth), randIntBetween(0, windowHeight),
-                        randIntBetween(10, 35), randIntBetween(0, 5), randIntBetween(0, 5), 30));
+            new Meteor(randIntBetween(0, windowWidth - radius), randIntBetween(0, windowHeight - radius),
+                        radius, randIntBetween(0, 5), randIntBetween(0, 5), 30));
     }
 
     //Move players

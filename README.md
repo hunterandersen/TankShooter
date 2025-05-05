@@ -16,14 +16,14 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[Play it here](https://tankshooter-production.up.railway.app/)
 
 ### Built With
 * Javascript
 * [Socket.io](https://socket.io)
 
-<!-- GETTING STARTED -->
-## Getting Started
+<!-- RUNNING LOCALLY -->
+## Run it Locally
 
 To get a local copy up and running follow these simple steps.
 
@@ -67,14 +67,14 @@ Feel free to test it with a few friends! Have Fun!
 <!-- ROADMAP -->
 ## Roadmap
 
-- [] Implement composition class structure to more elegantly handle object movement
-- [] Implement bullet collision and subsequent player death
-- [] Implement LERP to smooth object movements
-- [] Expand and beautify the start menu(s)
-    - [] Make sure the menus are responsive
-- [] Secure the data transfers between server and client with JWT
-- [] Authenticate users
-    - [] Limit room creation to one room per user
+- [ ] Implement composition class structure to more elegantly handle object movement
+- [x] Implement bullet collision and subsequent player death
+- [ ] Implement LERP to smooth object movements
+- [ ] Expand and beautify the start menu(s)
+    - [ ] Make sure the menus are responsive
+- [ ] Secure the data transfers between server and client with JWT
+- [ ] Authenticate users
+    - [ ] Limit room creation to one room per user
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
