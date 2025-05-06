@@ -154,8 +154,9 @@ function drawPlayer(p){
 }
 
 function drawMeteor(m){
-    context.fillStyle = 'rgb(100, 93, 93)';
+    context.fillStyle = m.color;
     context.beginPath();
+    //x, y is the center. radius is radius. 0, PI*2 are the start/end angles
     context.arc(m.pos.x, m.pos.y, m.size.radius, 0, Math.PI *2);
     context.fill();
     context.closePath();

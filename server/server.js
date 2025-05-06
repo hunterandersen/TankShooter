@@ -267,6 +267,8 @@ function update(room){
             meteorExplosion(meteor, room);
             return false;//Remove the dead meteors
         }
+        //Reset meteor color
+        meteor.setColorToDefault();
 
         meteor.pos.x += meteor.vel.x;
         meteor.pos.y += meteor.vel.y;
@@ -306,7 +308,8 @@ function update(room){
     for(let i = 0; i < meteorsLength - newMeteorsLength; i++){
         const radius = randIntBetween(10, 35);
         gameState[room].meteors.push(
-            new Meteor(randIntBetween(0, windowWidth - radius), randIntBetween(0, windowHeight - radius),
+            new Meteor(randIntBetween(0 + radius, windowWidth - radius),
+                        randIntBetween(0 + radius, windowHeight - radius),
                         radius, randIntBetween(0, 5), randIntBetween(0, 5), 30));
     }
 
@@ -378,6 +381,7 @@ function update(room){
             if (squaredDistance(meteor.pos.x, meteor.pos.y, nearestPointOnTriangleX, nearestPointOnTriangleY) < (meteor.size.radius * meteor.size.radius)){
                 //Bullet collided with meteor!
                 meteor.health -= 5;
+                meteor.color = meteor.colors.BULLET_HIT_COLOR;
                 bulletHit = true;
             }
 
@@ -389,10 +393,15 @@ function update(room){
     });
 
     //Check for game over status
-    //If there's more than 1 player AND there's 1 (or fewer) players left alive, then it's a game over
-    if (gameState[room].players.length > 1 && gameState[room].players.filter(player => {
+    const numPlayersRemaining = gameState[room].players.filter(player => {
         return player?.canPlayCurrently;
-    }).length <= 1) {
+    }).length;
+    const numPlayersInRoom = gameState[room].players.length;
+
+    //If there's more than 1 player AND there's 1 (or fewer) players left alive,
+    // OR there's only 1 player in the room, and they've died,
+    // then it's a game over
+    if ((numPlayersInRoom > 1 && numPlayersRemaining <= 1) || (numPlayersInRoom == 1 && numPlayersRemaining <= 0)) {
         gameState[room].isGameOver = true;
         console.log("GAME OVER");
     }
