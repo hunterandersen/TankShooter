@@ -1,10 +1,11 @@
-const Player = require('./Classes/Player');
-const Meteor = require('./Classes/Meteor');
-const Bullet = require('./Classes/Bullet');
-const express = require('express');
-const { createServer } = require('http');
-const dotenv = require('dotenv');
-const SocketServer = require("socket.io").Server;
+import express from 'express';
+import { createServer } from 'http';
+import dotenv from 'dotenv';
+import Player from './Classes/Player.js';
+import Meteor from './Classes/Meteor.js';
+import Bullet from './Classes/Bullet.js';
+import authRouter from './auth.js';
+import { Server as SocketServer } from "socket.io";
 
 dotenv.config();
 
@@ -25,7 +26,9 @@ let uniqueActiveGameRooms = [];
 const expressApp = express();
 //Create the server that will handle both Express and Socket.io
 const httpServer = createServer(expressApp);
+
 //Set up the middleware that serves my static client-side html
+expressApp.use('/', authRouter);
 expressApp.use(express.static('menuFiles'));
 expressApp.use(express.static('gameFiles'));
 expressApp.use(express.json());

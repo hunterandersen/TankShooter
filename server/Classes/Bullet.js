@@ -45,4 +45,4 @@ class Bullet{
     }
 }
 
-module.exports = Bullet;
+export default Bullet;

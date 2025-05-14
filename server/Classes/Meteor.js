@@ -30,4 +30,4 @@ class Meteor{
     }
 }
 
-module.exports = Meteor;
+export default Meteor;
