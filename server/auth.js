@@ -3,9 +3,6 @@ import { ExpressAuth } from "@auth/express";
 import Google from "@auth/express/providers/google";
 import dotenv from 'dotenv';
 
-console.log(typeof Google);
-console.log(Object.keys(Google));
-
 dotenv.config();
 
 const authRouter = express();
@@ -15,7 +12,6 @@ authRouter.set("trust proxy", true);
 //This is where the pre-made auth routes come in. Again, from authjs.dev
 authRouter.use("/auth/*", ExpressAuth({ 
     providers: [Google],
-    secret: process.env.AUTH_SECRET
 }));
 
 export default authRouter;
