@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 import Player from './Classes/Player.js';
 import Meteor from './Classes/Meteor.js';
 import Bullet from './Classes/Bullet.js';
-import authRouter from './auth.js';
+import { authRouter, authSession} from './auth.js';
 import { Server as SocketServer } from "socket.io";
 
 dotenv.config();
@@ -28,7 +28,8 @@ const expressApp = express();
 const httpServer = createServer(expressApp);
 
 //Set up the middleware that serves my static client-side html
-expressApp.use('/', authRouter);
+expressApp.use("/", authRouter);
+expressApp.use("/", authSession);
 expressApp.use(express.static('menuFiles'));
 expressApp.use(express.static('gameFiles'));
 expressApp.use(express.json());

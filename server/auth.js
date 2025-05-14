@@ -1,5 +1,6 @@
 import express from "express";
 import { ExpressAuth } from "@auth/express";
+import { getSession } from "@auth/express"
 import Google from "@auth/express/providers/google";
 import dotenv from 'dotenv';
 
@@ -14,4 +15,20 @@ authRouter.use("/auth/*", ExpressAuth({
     providers: [Google],
 }));
 
-export default authRouter;
+
+
+/**
+ * Middleware that grabs the user's session info and injects it into the res object for later use
+ * @param {Object} req Request object
+ * @param {Object} res Response object
+ * @param {Function} next Function to pass everything to the next middleware
+ */
+async function authSession(err, req, res, next) {
+  res.locals.session = await getSession(req);
+  next();
+}
+
+export {
+    authRouter,
+    authSession
+}
