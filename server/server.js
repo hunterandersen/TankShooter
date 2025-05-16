@@ -1,10 +1,12 @@
 import express from 'express';
 import { createServer } from 'http';
+import fs from 'fs';
 import dotenv from 'dotenv';
 import Player from './Classes/Player.js';
 import Meteor from './Classes/Meteor.js';
 import Bullet from './Classes/Bullet.js';
-import { authRouter, authSession} from './auth.js';
+import { authRouter, authSession, authConfig } from './auth.js';
+import { getSession } from "@auth/express"
 import { Server as SocketServer } from "socket.io";
 
 dotenv.config();
@@ -30,20 +32,40 @@ const httpServer = createServer(expressApp);
 //Set up the middleware that serves my static client-side html
 expressApp.use("/", authRouter);
 expressApp.use("/", authSession);
+expressApp.use(express.json());
+
+expressApp.get('/', async (req, res) => {
+    //Determine whether or not the user is logged in
+    const session = res.locals.session ?? (await getSession(req, authConfig));
+    const isLoggedIn = !!session.user;
+    if (!session?.user) {
+        //No user session - not logged in
+
+    } else {
+        
+    }
+
+    //Inject the user info into the HTML, then serve the menu files
+    let menuHTML = fs.readFileSync('./menuFiles/index.html', 'utf-8');
+    const userInfoScript = `<script class="userInfo">window.serverUserInfo = ${JSON.stringify(isLoggedIn)}</script>`;
+    menuHTML = menuHTML.replace(`<script class="userInfo"></script>`, userInfoScript);
+
+    //Let the client know it's HTML
+    res.setHeader('Content-Type', 'text/html');
+    res.send(menuHTML);
+});
 expressApp.use(express.static('menuFiles'));
 expressApp.use(express.static('gameFiles'));
-expressApp.use(express.json());
 
 expressApp.get('/getRooms', (req, res)=>{
     res.json(uniqueActiveGameRooms);
 });
 
-expressApp.post("/roomToJoinIsValid", (req, res) => {
-    console.log("Determining incoming room's validity");
-    const {roomName} = req.body;
+expressApp.get("/roomToJoinIsValid", (req, res) => {
+    const {roomID} = req.query;
 
     //Find the room in the list of all rooms
-    const roomToJoin = sockIO.sockets.adapter.rooms.get(roomName);
+    const roomToJoin = sockIO.sockets.adapter.rooms.get(roomID);
     //If the room exists and doesn't have more than 3 players, then true, else false
     const roomIsValid = !!roomToJoin && (roomToJoin.size < 4);
     console.log("roomIsValid", roomIsValid);

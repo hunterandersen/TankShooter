@@ -8,6 +8,12 @@
     <link rel='stylesheet' href='style.css'></link>
 </head>
 <body>
+    <header>
+        <div class="userAuth">
+            <button id="signInButton" hidden>Sign In</button>
+            <button id="signOutButton" hidden>Sign Out</button>
+        </div>
+    </header>
     <main class="mainContainer">
         <input class="initialPageElement" id='nameInput' placeholder="*User name here*"/>
         <input class="initialPageElement" id='roomInput' placeholder="*Room id here*"/>
@@ -24,5 +30,7 @@
     
     <!-- <script src="https://cdn.socket.io/4.4.0/socket.io.min.js" integrity="sha384-1fOn6VtTq3PWwfsOrk45LnYcGosJwzMHv+Xh/Jx5303FVOXzEnw0EpLv30mtjmlj" crossorigin="anonymous"></script> -->
     <script type='module' src='index.js'></script>
+    <!-- This gets modified by the server, before sending to client -->
+    <script class="userInfo"></script>
 </body>
 </html>

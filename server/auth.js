@@ -11,9 +11,10 @@ const authRouter = express();
 // If your app is served through a proxy, trust the proxy to allow us  to read the `X-Forwarded-*` headers. This came from Authjs.dev
 authRouter.set("trust proxy", true);
 //This is where the pre-made auth routes come in. Again, from authjs.dev
-authRouter.use("/auth/*", ExpressAuth({ 
+const authConfig = { 
     providers: [Google],
-}));
+};
+authRouter.use("/auth/*", ExpressAuth(authConfig));
 
 
 
@@ -30,5 +31,6 @@ async function authSession(err, req, res, next) {
 
 export {
     authRouter,
-    authSession
+    authSession,
+    authConfig
 }

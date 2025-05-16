@@ -3,6 +3,8 @@ const roomNameInput = document.getElementById('roomInput');
 const newRoomButton = document.getElementById('newGameRoomBtn');
 const joinRoomButton = document.getElementById('joinGameRoomBtn');
 const userFeedbackBar = document.getElementById('userFeedbackBar');
+const signInButton = document.getElementById('signInButton');
+const signOutButton = document.getElementById('signOutButton');
 const roomList = document.getElementById('roomList');
 
 const MIN_USER_NAME_LENGTH = 2;
@@ -69,7 +71,7 @@ newRoomButton.addEventListener('click', () => {
         let userName = userNameInput.value;
 
         //Set the search params for player name
-        let params = new URLSearchParams(HREF);
+        let params = new URLSearchParams();
         params.set('playerName', userName);
         //Redirect to start the game with the search params
         const redirectURL = `${HREF}game.html?${params.toString()}`;
@@ -87,22 +89,21 @@ joinRoomButton.addEventListener('click', async () => {
         
         if (roomNameInput.value.length == 6){
             let roomName = roomNameInput.value;
-
-            const result = await fetch('/roomToJoinIsValid', {
-                method:'POST',
+            
+            let params = new URLSearchParams();
+            params.set('roomID', roomName);
+            const result = await fetch(`/roomToJoinIsValid?${params.toString()}`, {
+                method:'GET',
                 mode:'cors',
                 cache:'no-cache',
                 credentials: 'same-origin',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({
-                    "roomName": roomName
-                })
             });
             const data = await result.json();
             
             if (data) {
                 //Set the search params for player name
-                let params = new URLSearchParams(HREF);
+                params = new URLSearchParams();
                 params.set('playerName', userName);
                 params.set('roomID', roomName);
                 //Redirect to start the game with the search params
@@ -121,7 +122,7 @@ joinRoomButton.addEventListener('click', async () => {
     }
 });
 
-//MARK: HTML UI handling
+//MARK: UI handling
 function matchUItoState() {
     //Enable/Disable the buttons based on the text inputs
     newRoomButton.disabled = !isValidUserName;
