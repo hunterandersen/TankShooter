@@ -10,6 +10,30 @@ const roomList = document.getElementById('roomList');
 const MIN_USER_NAME_LENGTH = 2;
 const ROOM_NAME_LENGTH = 6;
 
+//Comes from server
+const isLoggedIn = window.serverUserInfo;
+console.log(isLoggedIn);
+
+if (isLoggedIn) {
+    signOutButton.hidden = false;
+} else {
+    signInButton.hidden = false;
+}
+
+signInButton.addEventListener("click", () => {
+    //Redirect the user to the server's sign-in page
+    console.log("Redirecting to sign-in page");
+    const redirectURL = `${HREF}auth/signin`;
+    window.location.replace(redirectURL);
+});
+
+signOutButton.addEventListener("click", () => {
+    //Redirect the user to the server's sign-in page
+    console.log("Redirecting to sign-out page");
+    const redirectURL = `${HREF}auth/signout`;
+    window.location.replace(redirectURL);
+});
+
 let isValidUserName = false;
 let isValidRoomName = false;
 
@@ -52,6 +76,10 @@ function displayGameRooms(){
                         button.classList.remove("selected");
                     });
                     e.target.classList.add("selected");
+
+                    //Update the UI to enable the Join Room button
+                    isValidRoomName = true;
+                    matchUItoState();
                 });
                 
                 roomInfo.appendChild(roomButton);

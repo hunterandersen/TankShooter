@@ -37,13 +37,7 @@ expressApp.use(express.json());
 expressApp.get('/', async (req, res) => {
     //Determine whether or not the user is logged in
     const session = res.locals.session ?? (await getSession(req, authConfig));
-    const isLoggedIn = !!session.user;
-    if (!session?.user) {
-        //No user session - not logged in
-
-    } else {
-        
-    }
+    const isLoggedIn = !!session?.user;
 
     //Inject the user info into the HTML, then serve the menu files
     let menuHTML = fs.readFileSync('./menuFiles/index.html', 'utf-8');
