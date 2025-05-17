@@ -239,6 +239,8 @@ function restartGameState(room) {
 }
 
 function startGameLoop(room) {
+    sockIO.sockets.in(room).emit('gameStarting');
+    
     const intervalId = setInterval(() => {
         if (gameState[room].isGameOver) {
             sockIO.sockets.in(room).emit("gameOver", gameState[room]);

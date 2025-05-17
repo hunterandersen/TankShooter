@@ -1,5 +1,6 @@
 //io is retrieved from a cdn in the script tag in index.html
 
+const gameOverContainer = document.getElementById("gameOverContainer");
 const canvas = document.getElementById('canvas');
 const context = canvas.getContext('2d');
 const windowWidth = 900;
@@ -64,12 +65,15 @@ serverSocket.on('init', data => {
     canvas.setAttribute('background-color', 'rgb(15, 15, 15)');
 });
 
+serverSocket.on('gameStarting', () => {
+    gameOverContainer.hidden = true;
+});
+
 serverSocket.on('newGameFrame', paintFrame);
 
 serverSocket.on('gameOver', (gameState) => {
     paintFrame(gameState);
     const gameOverText = document.getElementById("gameOverText");
-    const gameOverContainer = document.getElementById("gameOverContainer");
     const yesButton = document.getElementById("yesButton");
 
     //Determine which player won the game
